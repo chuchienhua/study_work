@@ -1,7 +1,8 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 // 确保连接字符串是最新的，包含数据库名和tls=true参数
-const uri = 'mongodb+srv://serre1234:Mm0922578849@cluster0.iiipjhx.mongodb.net/?retryWrites=true&w=majority';
+// const uri = 'mongodb+srv://serre1234:Mm0922578849@cluster0.iiipjhx.mongodb.net/?retryWrites=true&w=majority';
+const uri =process.env.ATLAS.URI
 export async function connectToCollection(dbName, collectionName) {
   const client = new MongoClient(uri, {
     serverApi: {
