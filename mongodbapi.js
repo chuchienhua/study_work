@@ -21,6 +21,7 @@ StuduApi.post('/findmember', async (req, res) => {
 
     if (memberExists) {
         res.json({ status: "success", message: "Login successful", id: id, pw: pw });
+        console.log("123");
     } else {
         // 成員不存在
         res.status(401).send({ status: "error", message: "Invalid credentials" });

@@ -2,31 +2,28 @@ import { config } from 'dotenv';
 config();
 
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
 import mongodbapi from "./mongodbapi.js";
+
 const app = express();
-// parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false }));
+
+// 優化後的中間件設置
 // parse application/json
 app.use(express.json({ limit: "20mb" }));
-app.use(cors());
-// parse form-data
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// parse application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 
+// 設置CORS策略
+const corsOptions = {
+  origin: ['http://localhost:3000', "http://192.168.0.13:3000",'https://你的前端域名'], // 允許訪問的源列表
+  credentials: true, // 允許跨域請求帶有認證信息（如Cookies）
+  optionsSuccessStatus: 200 // 某些舊版瀏覽器（IE11, various SmartTVs）兼容性設置
+};
+app.use(cors(corsOptions));
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
 
 const port = process.env.PORT || 3001;
-app.use('/study', mongodbapi)
+app.use('/study', mongodbapi);
 
 app.listen(port, () => {
   console.log("server start");
