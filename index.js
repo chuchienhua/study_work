@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 設置CORS策略
 const corsOptions = {
-  origin: ['http://localhost:3000', "http://192.168.0.13:3000",'https://你的前端域名'], // 允許訪問的源列表
+  origin: ['http://localhost:3000', "http://192.168.0.13:3000"], // 允許訪問的源列表
   credentials: true, // 允許跨域請求帶有認證信息（如Cookies）
   optionsSuccessStatus: 200 // 某些舊版瀏覽器（IE11, various SmartTVs）兼容性設置
 };
