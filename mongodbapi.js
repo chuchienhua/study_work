@@ -9,7 +9,7 @@ StuduApi.post('/creatmember', async (req, res) => {
     const id = req.body.id
     const pw = req.body.pw
     await mongodb.creatmember(id, pw)
-    res.send('ok')
+    res.json({ login: "ok" }) // 修正 JSON 格式
 })
 
 //check member
@@ -20,10 +20,10 @@ StuduApi.post('/findmember', async (req, res) => {
     const memberExists = await mongodb.findMember(id, pw);
 
     if (memberExists) {
-        res.status(400).send('Member already exists');
+        res.json({ status: "success", message: "Login successful", id: id, pw: pw });
     } else {
         // 成員不存在
-        res.status(200).send('Member does not exist');
+        res.status(401).send({ status: "error", message: "Invalid credentials" });
     }
 });
 
