@@ -24,7 +24,7 @@ StuduApi.post('/findmember', async (req, res) => {
         console.log("123");
     } else {
         // 成員不存在
-        res.status(401).send({ status: "error", message: "Invalid credentials" });
+        res.json({ status: "error", message: "Invalid credentials" });
     }
 });
 
@@ -55,11 +55,11 @@ StuduApi.post('/update-study', async (req, res) => {
     try {
         // 呼叫 updateStudyData 函數進行更新
         await mongodb.updateStudyData(id, studytime, studycontent);
-        res.send('Study data updated successfully');
+        res.json({ status: 'success' });
     } catch (error) {
         // 處理可能發生的錯誤
         console.error('Error updating study data:', error);
-        res.status(500).send('Error updating study data');
+        res.json({ status: 'error' });
     }
 });
 
@@ -73,6 +73,19 @@ StuduApi.get('/get-study-data', async (req, res) => {
         res.status(500).send('Error retrieving study data');
     }
 });
+
+// 设置检索特定用户学习数据的路由
+StuduApi.get('/get-study-data/:id', async (req, res) => {
+    const userId = req.params.id; // 从 URL 获取用户 ID
+    try {
+        const studyData = await mongodb.getStudyDataByUserId(userId);
+        res.json(studyData); // 发送 JSON 响应
+    } catch (error) {
+        console.error('Error retrieving study data for user ID:', userId, error);
+        res.status(500).send('Error retrieving study data');
+    }
+});
+
 
 StuduApi.get('/testhello', async (req, res) => {
     try {

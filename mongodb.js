@@ -144,3 +144,24 @@ export async function getAllStudyData() {
     }
 }
 
+// 获取特定用户的所有学习数据
+export async function getStudyDataByUserId(userId) {
+    let closeConnection;
+    try {
+        const { collection, closeConnection: closeConn } = await studymongodb.connectToCollection('Study', 'study_time');
+        closeConnection = closeConn;
+
+        // 使用 find 方法和查询条件获取特定用户的文档
+        const studyData = await collection.find({ loginId: userId }).toArray();
+
+        return studyData; // 返回查询到的数据
+    } catch (err) {
+        console.error('An error occurred while retrieving study data for user:', userId, err);
+        throw err; // 抛出错误以便于外部捕获
+    } finally {
+        if (closeConnection) {
+            closeConnection();
+        }
+    }
+}
+
