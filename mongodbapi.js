@@ -35,8 +35,9 @@ StuduApi.post('/creatstudy', async (req, res) => {
         const studytime = req.body.studytime
         const studycontent = req.body.studycontent
         await mongodb.creatstudy(id, studytime, studycontent)
-        res.send('ok')
+        res.json({status:'success'})
     } catch (err) {
+        res.json({status:'error'})
         console.error('An error occurred:', err);
     }
 })
