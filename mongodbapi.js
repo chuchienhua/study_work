@@ -32,12 +32,13 @@ StuduApi.post('/findmember', async (req, res) => {
 StuduApi.post('/creatstudy', async (req, res) => {
     try {
         const id = req.body.id
+        const studyDatebyself = req.body.studyDatebyself
         const studytime = req.body.studytime
         const studycontent = req.body.studycontent
-        await mongodb.creatstudy(id, studytime, studycontent)
-        res.json({status:'success'})
+        await mongodb.creatstudy(id, studyDatebyself, studytime, studycontent)
+        res.json({ status: 'success' })
     } catch (err) {
-        res.json({status:'error'})
+        res.json({ status: 'error' })
         console.error('An error occurred:', err);
     }
 })
@@ -45,6 +46,7 @@ StuduApi.post('/creatstudy', async (req, res) => {
 StuduApi.post('/update-study', async (req, res) => {
     // 從請求體中提取資料
     const id = req.body.id;
+    const studyDatebyself = req.body.studyDatebyself
     const studytime = req.body.studytime;
     const studycontent = req.body.studycontent;
 
@@ -55,7 +57,7 @@ StuduApi.post('/update-study', async (req, res) => {
 
     try {
         // 呼叫 updateStudyData 函數進行更新
-        await mongodb.updateStudyData(id, studytime, studycontent);
+        await mongodb.updateStudyData(id, studyDatebyself, studytime, studycontent);
         res.json({ status: 'success' });
     } catch (error) {
         // 處理可能發生的錯誤

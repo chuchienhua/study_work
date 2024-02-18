@@ -68,7 +68,7 @@ function getCurrentDateTime() {
 }
 
 //insert study data
-export async function creatstudy(id, studytime, studycontent) {
+export async function creatstudy(id, studyDatebyself, studytime, studycontent) {
     let closeConnection; // 定義一個變數以保持 closeConnection 函數
     try {
         const { collection, closeConnection: closeConn } = await studymongodb.connectToCollection('Study', 'study_time');
@@ -77,6 +77,7 @@ export async function creatstudy(id, studytime, studycontent) {
         const doc = {
             loginId: id,
             studyDate: getCurrentDateTime(),
+            studyDatebyself: studyDatebyself,
             studytime: studytime,
             studycontent: studycontent,
         };
@@ -92,7 +93,7 @@ export async function creatstudy(id, studytime, studycontent) {
 }
 
 // update studytime 與 studycontent
-export async function updateStudyData(id, studytime, studycontent) {
+export async function updateStudyData(id, studyDatebyself, studytime, studycontent) {
     let closeConnection;
     try {
         const { collection, closeConnection: closeConn } = await studymongodb.connectToCollection('Study', 'study_time');
@@ -104,7 +105,7 @@ export async function updateStudyData(id, studytime, studycontent) {
         // 更新文檔
         const updateResult = await collection.updateOne(
             { _id: documentId },
-            { $set: { studytime: studytime, studycontent: studycontent } }
+            { $set: { studyDatebyself: studyDatebyself, studytime: studytime, studycontent: studycontent } }
         );
 
         if (updateResult.modifiedCount === 1) {
