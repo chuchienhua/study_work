@@ -68,29 +68,46 @@ function getCurrentDateTime() {
 }
 
 //insert study data
-export async function creatstudy(id, studyDatebyself, studytime, studycontent) {
-    let closeConnection; // 定義一個變數以保持 closeConnection 函數
+export async function createStudy(id, studyDatebyself, studytime, studycontent) {
+    let closeConnection;
+    let obj = {
+        res: [],
+        error: false,
+    };
     try {
         const { collection, closeConnection: closeConn } = await studymongodb.connectToCollection('Study', 'study_time');
-        closeConnection = closeConn; // 保存 closeConnection 函數以便稍後使用
+        closeConnection = closeConn;
+
+        // 先查詢 studyDatebyself 是否已存在
+        const existingDocument = await collection.findOne({ studyDatebyself: studyDatebyself });
+        if (existingDocument) {
+            throw new Error('已經登記過此日期，請重新確認');
+        }
 
         const doc = {
             loginId: id,
-            studyDate: getCurrentDateTime(),
+            studyDate: new Date(), // 假設 getCurrentDateTime() 返回當前日期時間
             studyDatebyself: studyDatebyself,
             studytime: studytime,
             studycontent: studycontent,
         };
+
         const result = await collection.insertOne(doc);
+        obj.res.push(result.insertedId); // 儲存插入文檔的 ID
+
     } catch (err) {
         console.error('An error occurred:', err);
-    }
-    finally {
+        obj.error = true;
+        obj.res = err.message; // 儲存錯誤訊息
+    } finally {
         if (closeConnection) {
-            closeConnection(); // 使用保存的 closeConnection 函數來關閉連接
+            closeConnection();
         }
     }
+
+    return obj; // 返回 obj 對象，包含操作結果或錯誤信息
 }
+
 
 // update studytime 與 studycontent
 export async function updateStudyData(id, studyDatebyself, studytime, studycontent) {
@@ -123,6 +140,36 @@ export async function updateStudyData(id, studyDatebyself, studytime, studyconte
     }
 }
 
+//刪除資料
+export async function deleteStudyDataById(id) {
+    let closeConnection;
+    try {
+        const { collection, closeConnection: closeConn } = await studymongodb.connectToCollection('Study', 'study_time');
+        closeConnection = closeConn;
+
+        // 將字符串形式的 _id 轉換為 ObjectId
+        const documentId = new ObjectId(id);
+
+        // 刪除指定的文檔
+        const deleteResult = await collection.deleteOne({ _id: documentId });
+
+        if (deleteResult.deletedCount === 1) {
+            console.log(`Document with _id: ${id} was successfully deleted.`);
+            return { success: true, message: `Document with _id: ${id} was successfully deleted.` };
+        } else {
+            console.log(`No document matched the provided _id. No documents were deleted.`);
+            return { success: false, message: `No document matched the provided _id. No documents were deleted.` };
+        }
+    } catch (err) {
+        console.error('An error occurred during the deletion:', err);
+        return { success: false, message: err.message };
+    }
+    finally {
+        if (closeConnection) {
+            closeConnection();
+        }
+    }
+}
 
 // 獲取所有學習資料
 export async function getAllStudyData() {

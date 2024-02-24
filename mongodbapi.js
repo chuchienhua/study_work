@@ -30,17 +30,13 @@ StuduApi.post('/findmember', async (req, res) => {
 
 //insert study data.
 StuduApi.post('/creatstudy', async (req, res) => {
-    try {
-        const id = req.body.id
-        const studyDatebyself = req.body.studyDatebyself
-        const studytime = req.body.studytime
-        const studycontent = req.body.studycontent
-        await mongodb.creatstudy(id, studyDatebyself, studytime, studycontent)
-        res.json({ status: 'success' })
-    } catch (err) {
-        res.json({ status: 'error' })
-        console.error('An error occurred:', err);
-    }
+
+    const id = req.body.id
+    const studyDatebyself = req.body.studyDatebyself
+    const studytime = req.body.studytime
+    const studycontent = req.body.studycontent
+    mongodb.createStudy(id, studyDatebyself, studytime, studycontent)
+        .then(val => res.send(val));
 })
 
 StuduApi.post('/update-study', async (req, res) => {
@@ -54,10 +50,28 @@ StuduApi.post('/update-study', async (req, res) => {
     if (!id || !studytime || !studycontent) {
         return res.status(400).send('Missing data in request body');
     }
-
     try {
         // 呼叫 updateStudyData 函數進行更新
         await mongodb.updateStudyData(id, studyDatebyself, studytime, studycontent);
+        res.json({ status: 'success' });
+    } catch (error) {
+        // 處理可能發生的錯誤
+        console.error('Error updating study data:', error);
+        res.json({ status: 'error' });
+    }
+});
+
+StuduApi.post('/deleteStudyDataById', async (req, res) => {
+    // 從請求體中提取資料
+    const id = req.body.id;
+
+    // 檢查請求體中是否包含所有必要的資料
+    if (!id) {
+        return res.status(400).send('Missing data in request body');
+    }
+    try {
+        // 呼叫 deleteStudyDataById 函數進行更新
+        await mongodb.deleteStudyDataById(id);
         res.json({ status: 'success' });
     } catch (error) {
         // 處理可能發生的錯誤
